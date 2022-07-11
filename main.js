@@ -1,7 +1,12 @@
 
 
-    
+var screen = document.getElementById("canv")
 var ctx = document.getElementById("canv").getContext("2d");
+
+var mc = new FontFace("minecraft",'url("/font/minecraft_pl_font.woff")')
+mc.load().then(mc => {
+    document.fonts.add(mc)
+})
 
 var dic = {
     grass:{name:"grass",emote:"<:00:976014562996391936>",points:0},
@@ -135,7 +140,7 @@ class gamecore{
         this.y = []
         playerd.forEach((p,i)=>{
             this.skin.push(p.skin)
-            this.x[i]=Math.round(ww/2);
+            this.x[i]=Math.round(54/2);
             this.y[i]=128;
         })
         this.pcount = playerc
@@ -146,7 +151,7 @@ class gamecore{
         this.punkty = 0;
         }
 // generatory światów
-        generateOW(Wwidth = ww){
+        generateOW(Wwidth = 64){
 		this.Wwidth = Wwidth
         //overworld generation
         //prepair
@@ -313,24 +318,17 @@ class gamecore{
         console.log(oput);
         }
 //         podstawowy format dc.
-        getdcformatbs(player=0){
+        getarrformat(player=0){
         var x = this.x[player]
         var y = this.y[player]
-        var out = "";
-        var cout = "";
-        out+="Punkty : "+this.punkty+"\n"
-        for(var yi = 0;yi<9;yi++){
-          for(var xi = 0;xi<9;xi++){
-            var b = this.getblock(x-4+xi,y+4-yi).toString()
-            cout+=b.charAt(0)
-            if(yi==4&&xi==4)out+= skins[this.skin[player]].emoji
-            else out+=dic[b].emote
+        var out = [];
+        for(var yi = 0;yi<11;yi++){
+            out[yi] = [];
+          for(var xi = 0;xi<11;xi++){
+            out[yi][xi] = this.getblock(x-5+xi,y+5-yi).toString();
           }
-          out+="\n"
-          cout+="\n"
           
          }
-        console.log(cout)
         return out
          
         }
@@ -343,12 +341,12 @@ class gamecore{
             this.x[playe] = tempx
             this.y[playe] = tempy
             this.setAir(this.x[playe],this.y[playe])
-            var ty =(this.y)-1
-            var down = this.getblock(this.x,ty)
-            console.log(down)
-            if(down==dic.air.name)this.move(0,-1)
         }
         
+        }
+        checkGravity(){
+            var down = this.getblock(this.x[0],this.y[0]-1)
+            if(down==dic.air.name)this.move(0,-1)
         }
         setAir(x,y){
           this.punkty += dic[this.getblock(x,y)].points
@@ -357,9 +355,6 @@ class gamecore{
           if(this.getblock(x-1, y)==dic.black.name) this.setAir(x-1, y)  
           if(this.getblock(x, y+1)==dic.black.name) this.setAir(x, y+1)  
           if(this.getblock(x, y-1)==dic.black.name) this.setAir(x, y-1)
-        }
-        setmsg(msgID){
-            this.msg = msgID;
         }
 }
 
@@ -387,10 +382,60 @@ Object.values(dic).forEach(asset=>{
         }
     })
 })
+var mx = 0;
+var my = 0;
 function start(){
 ctx.fillStyle = "#ADD8E6"
 ctx.fillRect(0,0,144,144)
 ctx.drawImage(imgs["grass"],0,0,16,16);
+var game =  new gamecore(1);
+
+render()
+var TapLocation = {x:0,y:0}
+var TapLocationEnd = {x:0,y:0}
+screen.addEventListener("mousedown",function(e) {
+    TapLocation = getMousePos(e)
+    game =  new gamecore(1);
+    render()
+},false)
+screen.addEventListener("mouseup",function(e) {
+    TapLocationEnd = getMousePos(e)
+},false)
+function getMousePos(mouseEvent) {
+    return {
+      x: mouseEvent.clientX,
+      y: mouseEvent.clientY
+    };
+}
+ctx.font = 22+'px minecraft';
+setInterval(render, 33);
+function mover(){
+    
+}
+function render(movex=mx,movey=my){
+    ctx.fillStyle = "#ADD8E6"
+    ctx.fillRect(0,0,144,144)
+    var arry = game.getarrformat();
+        for(var yi = 0;yi<11;yi++){
+          for(var xi = 0;xi<11;xi++){
+            ctx.drawImage(imgs[arry[yi][xi]],(xi*16-16)+movex,(yi*16-16)+movey,16,16)
+          }
+         }
+         ctx.drawImage(imgs["steve"],64,64,16,16)
+         ctx.fillStyle = "#36454F"
+         ctx.fillRect(0,144,144,16)
+         ctx.fillStyle = 'white';
+        ctx.fillText("punkty : "+game.punkty,2,156)
+        if(mx<0)mx++
+        if(mx>0)mx--
+        if(my<0)my++
+        if(my>0)my--
+        if(my==0&&mx==0)game.checkGravity();
+    }
+    
+    
+        
+
 }
 // var get emoji url
 function getemojiUrl(id){  
