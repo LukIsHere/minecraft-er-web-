@@ -6,10 +6,11 @@ canvas{
 }
 html{
     background-color: rgb(36, 36, 36);
+    overflow: hidden;
 }
 .a{
     width: 100%;
 }
 .b{
-    height: 99%;
+    height: 100%;
 }
