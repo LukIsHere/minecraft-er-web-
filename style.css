@@ -1,9 +1,15 @@
 canvas{
     position: absolute;
-    top: 50%;
+    
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%,0%);
 }
 html{
     background-color: rgb(36, 36, 36);
+}
+.a{
+    width: 100%;
+}
+.b{
+    height: 100%;
 }
